@@ -19,13 +19,13 @@
 
 				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 				    <ul class="navbar-nav ml-auto" id ="centerUl">
-							<li class="nav-item active">
+							<li class="nav-item ">
 				        <a class="nav-link px-3" href="{% url 'Flixer:home' %}">Home</a>
 				      </li>
 				      <li class="nav-item">
 				        <a class="nav-link px-3" href="{% url 'Flixer:user-page' %}">Edit user</a>
 				      </li>
-				      <li class="nav-item">
+				      <li class="nav-item active">
 				        <a class="nav-link px-3" href="{% url 'Flixer:movie-page' %}">Edit Movies</a>
 				      </li>
                       <li class="nav-item" style="align-self: center">
@@ -41,43 +41,8 @@
 				  </div>
 				</nav>
 			</header>
-			<div class="content">
-				<div class="container-fluid">
-                    <div class = buttonsrow>
-                        <div class = "buttonUser">
-                            <a href="#">
-                                <i class = "fa fa-user-plus fa-5x"></i>
-                                <div class="icontext">Edit users</div>
-                            </a>
-                        </div>
-
-                        <div class = "buttonMovie">
-                            <a href="#">
-                                <i class = "fa fa-file-movie-o fa-5x"></i>
-                                <div class = "icontext"> Edit Movies</div>
-                            </a>
-                        </div>
-                    </div>
-				</div>
-			</div>
-			<footer class="page-footer font-small pt-4">
-			  <div class="footer-copyright">
-						<div class="linkcopy">
-							<a href="#">© 2020 Copyright.Made by Shayan Asghar</a>
-						</div>
-						<div class="icons">
-							<a href="#" class="fa fa-facebook"></a>
-							<a href="#" class="fa fa-instagram"></a>
-							<a href="#" class="fa fa-twitter"></a>
-						</div>
-				</div>
-			</footer>
-		</div>
-
-
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-	</body>
+        </div>
+</body>
 <script>
     function show(){
         if (document.getElementById('hiddenForm').style.display === "none"){
