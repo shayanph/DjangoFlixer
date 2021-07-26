@@ -23,7 +23,4 @@ class User(models.Model):
     email = models.EmailField()
 
     def __str__(self):
-        return '{0} : {1} : {2} : {3}'.format(self.user_id, self.name, self.password,self.email)
-
-
-
+        return '{0} : {1} : {2} : {3}'.format(self.user_id, self.name, self.password, self.email)

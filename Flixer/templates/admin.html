@@ -12,7 +12,7 @@
 		<div class="main">
 			<header class="header">
 				<nav class="navbar navbar-expand-lg navbar-light py-3">
-				  <a class="navbar-brand" href="#" style="font-size: 15px;"><strong>MyFlixer</strong></a>
+				  <a class="navbar-brand" href="{% url 'Flixer:home' %}" style="font-size: 15px;"><strong>MyFlixer</strong></a>
 				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				    <span class="navbar-toggler-icon"></span>
 				  </button>
@@ -45,14 +45,14 @@
 				<div class="container-fluid">
                     <div class = buttonsrow>
                         <div class = "buttonUser">
-                            <a href="#">
+                            <a href="{% url 'Flixer:user-page' %}">
                                 <i class = "fa fa-user-plus fa-5x"></i>
                                 <div class="icontext">Edit users</div>
                             </a>
                         </div>
 
                         <div class = "buttonMovie">
-                            <a href="#">
+                            <a href="{% url 'Flixer:movie-page' %}">
                                 <i class = "fa fa-file-movie-o fa-5x"></i>
                                 <div class = "icontext"> Edit Movies</div>
                             </a>
