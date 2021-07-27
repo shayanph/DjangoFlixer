@@ -12,5 +12,6 @@ urlpatterns = [
     path('home/searchMovie', views.searchMovie, name="movie-search"),
     path('home/delUser', views.deleteUser, name="user-delete"),
     path('home/addUser', views.addUser, name="add-user"),
+    path('home/editUser', views.editUser, name="edit-user"),
 
 ]
