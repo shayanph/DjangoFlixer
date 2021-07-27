@@ -20,10 +20,9 @@ def login(request):
             return HttpResponse('hello world')
 
 
-def userPage(request):
+def userPage(request, added='no'):
     userData = User.objects.all()
-    print(userData)
-    return render(request, 'admin_pages/usersData.html', {'userData': userData})
+    return render(request, 'admin_pages/usersData.html', {'userData': userData, 'added': added})
 
 
 def home(request):
@@ -38,5 +37,11 @@ def searchMovie(request):
     return HttpResponse(request.POST.get('search'))
 
 
+def deleteUser(request):
+    User.objects.filter(user_id=request.POST.get('user_id')).delete()
+    userPage(request)
+
+
 def addUser(request):
-    return render(request, "admin_pages/new-user.html")
+    if request.method == 'POST':
+        new_user = User()

@@ -3,6 +3,11 @@ img {
 }
 body{
   font-family: sans-serif;
+  /*background-image: url("../images/image_bg_1.jpg");*/
+  /*background-repeat: no-repeat;*/
+  /*background-size: cover;*/
+  /*backdrop-filter: blur(4px) grayscale(50%);*/
+
 
 }
 .main{
@@ -11,12 +16,15 @@ body{
   flex-direction: column;
 
 }
+
+#buttonGroup .buttonGroupForm{
+    width: 100%;
+}
 .buttonGroupForm button{
   border: none;
   width: 100%;
   background: transparent;
 }
-
 .buttonGroupForm button:hover{
 
 }
@@ -24,6 +32,27 @@ body{
   margin: 0px 100px;
   display: flex;
   flex: 1;
+}
+.userTable{
+  text-align: center;
+}
+.modal{
+  background: linear-gradient(to bottom right, #ccffff 0%, #ffccff 100%);
+}
+.modal-content
+{
+}
+.modal-body
+{
+  padding: 30px 100px;
+}
+.modal-content .form-group input{
+  border: none;
+  border-bottom: 2px solid red;
+  border-radius: 0;
+}
+.modal-content .form-group input:focus{
+  outline: none;
 }
 
 .buttonsrow{

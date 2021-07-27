@@ -2,7 +2,6 @@
 <html lang="en">
 	<head>
         {% load static %}
-
 		<title>index</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
@@ -52,16 +51,13 @@
                                     <th>User Id</th>
                                     <th>User Name</th>
                                     <th>User Email</th>
-                                    <th></th>
-                                    <th></th>
+                                    <th>Gender</th>
                                     <th>
-                                        <form action="{% url 'Flixer:user-add' %}" method="post">
-                                            {% csrf_token %}
-                                            <button class = "btn btn-success" style="width: 100%;">
-                                                Add User
-                                                <i class = "fa fa-plus-circle"> </i>
-                                            </button>
-                                        </form>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                      Add user
+                                        <i class = "fa fa-plus-circle"></i>
+                                    </button>
                                     </th>
                                 </tr>
                             </thead>
@@ -71,15 +67,16 @@
                                         <td>{{ lines.user_id}}</td>
                                         <td>{{ lines.name}}</td>
                                         <td>{{ lines.email}}</td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{{ lines.gender }}</td>
                                         <td id = "buttonGroup" style = "display: flex; justify-content: space-evenly;">
-                                        <form class = "buttonGroupForm" id = "editform">
-                                            <input hidden name = "user_id" value = {{ lines.user_id }}>
+                                        <form method = "post" class = "buttonGroupForm mr-auto" id = "editform">
+                                            {% csrf_token %}
+                                            <input hidden name = "user_id"  value = {{ lines.user_id }}>
                                             <button class = "btn btn-outline-primary"><i class = "fa fa-edit"></i></button>
                                         </form>
 
-                                        <form class = "buttonGroupForm" id = "deleteform" onsubmit = "return checkDelete()">
+                                        <form class = "buttonGroupForm" method="post" id = "deleteform" onsubmit = "return checkDelete()" action = "{% url 'Flixer:user-delete' %}">
+                                            {% csrf_token %}
                                             <input hidden name = "user_id" value = {{ lines.user_id }}>
                                             <button class = "btn btn-outline-danger" type="submit" ><i class = "fa fa-remove"></i></button>
                                         </form>
@@ -91,6 +88,70 @@
                     </div>
 				</div>
 			</div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <form action="{% url 'Flixer:add-user' %}" onsubmit = "event.preventDefault();  checkFields()" id = "formUser" method="post">
+                      {% csrf_token %}
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add user</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                     <div class="modal-body">
+                         <div class = "form-group">
+                            <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alert1" role="alert">
+                              <strong>Id Already Exists</strong>
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                             <label for = "userid">User Id</label>
+                             <input required class = "form-control" type="text" id="userid" placeholder="Enter a user Id">
+                         </div>
+                         <div class = "form-group">
+                            <label for = "username">User Name</label>
+                             <input required class = "form-control" type="text" name = "id" id="username" placeholder="Enter a username">
+                         </div>
+                         <div class = "form-group">
+                            <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "passwordmatch" role="alert">
+                              <strong>Passwords do not match</strong>
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                             <label for = "password ">Password</label>
+                             <input required class = "form-control" type="password" name = "pass" id="password" placeholder="Enter a password">
+                         </div>
+                         <div class = "form-group">
+                             <label for = "repassword">Re-enter Password</label>
+                             <input required class = "form-control" type="password" name = "repass" id="repassword" placeholder="Re Enter the password">
+                         </div>
+                         <div class = "form-group">
+                             <label for = "email">Email</label>
+                             <input required class = "form-control" type="email" onchange="" name = "emaill" id="email" placeholder="Enter an email">
+                         </div>
+                         <div class = "form-group">
+                             <label>Gender</label>
+                         </div>
+                         <div class = "form-group">
+                             <input type="radio" name = "radio1" aria-label="Radio button" checked>
+                             <span>Male</span>
+                         </div>
+                         <div class = "form-group">
+                             <input type="radio" name = "radio1" aria-label="Radio button">
+                             <span>Female</span>
+                         </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"><i class = "fa fa-chevron-circle-right"></i></button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
 
 			<footer class="page-footer font-small pt-4">
 			  <div class="footer-copyright">
@@ -105,7 +166,11 @@
 				</div>
 			</footer>
         </div>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <script src="http://code.jquery.com/jquery.js"></script>
 </body>
+
 <script>
     function show(){
         if (document.getElementById('hiddenForm').style.display === "none"){
@@ -117,6 +182,33 @@
     }
     function checkDelete(){
         return confirm("Are you sure you want to delete the user?");
+    }
+
+    function checkFields(){
+
+        let id = document.getElementById('userid').value;
+        let pass = document.getElementById('password').value;
+        let rep = document.getElementById('repassword').value;
+        let found = false;
+        {% for lines in userData %}
+            if({{ lines.user_id }} == id.toString())
+            {
+            $("#alert1").fadeIn();
+            found = true;
+            }
+        {% endfor %}
+
+        if(pass !== rep)
+        {
+            $("#passwordmatch").show();
+            found = true;
+        }
+
+        if(found === true){
+            return false;
+        }
+        else
+            document.getElementById('formUser').submit();
     }
 </script>
 </html>
