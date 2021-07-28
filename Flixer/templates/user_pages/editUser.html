@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script>
+            $(function(){
+                if ("{{ user_data.gender }}" === "M"){
+                    document.getElementById('radio1').checked = true;
+                }
+                else{
+                    document.getElementById('radio2').checked = true;
+                }
+            });
+        </script>
+        {% load static %}
+		<title>index</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
+		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/styleUser.css' %}">
+	</head>
+	<body style="font-size: 12px;">
+
+		<div class="main">
+
+			<header class="header">
+				<nav class="navbar navbar-expand-lg navbar-light py-3">
+				  <a class="navbar-brand" href="{% url 'Flixer:user-home' %}" style="font-size: 15px;"><strong>MyFlixer</strong></a>
+				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				    <span class="navbar-toggler-icon"></span>
+				  </button>
+
+				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+				    <ul class="navbar-nav ml-auto" id ="centerUl">
+                        <li class="nav-item ">
+                            <a class="nav-link px-3" href="{% url 'Flixer:user-home' %}">Home</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link px-3" href="{% url 'Flixer:user-profile' %}">Profile</a>
+                        </li>
+                        <li class="nav-item" style="align-self: center">
+                            <div id = "logoutform">
+                                <a href = "{% url 'Flixer:user-logout' %}"><button class = "btn btn-danger btn-sm"><i class = "fa fa-sign-out"></i></button></a>
+                            </div>
+                        </li>
+				    </ul>
+				  </div>
+				</nav>
+			</header>
+            <div class="content" style = "align-items: flex-start;">
+				<div class="container-fluid">
+                    <div class = "moviesTable">
+                        <div class="myform" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <form id = "formEdit" action = "{% url 'Flixer:save-edit-user' %}" method="post">
+                                  {% csrf_token %}
+                                <div class="modal-header" style = "justify-content: space-around;">
+			                    <h1>Profile</h1>
+                                </div>
+                             <div class="modal-body">
+                                 <div class = "form-group">
+                                     <label for = "userid">User Id</label>
+                                     <input readonly class = "form-control" type="text" name = "user_id" id="userId" value = "{{ user_data.user_id }}" placeholder="Enter a user Id">
+                                 </div>
+                                 <div class = "form-group">
+                                    <label for = "username">User Name</label>
+                                     <input required class = "form-control" type="text" name = "user_name" id="username" value ="{{ user_data.name }}" placeholder="Enter a user name">
+                                 </div>
+                                 <div class = "form-group">
+                                     <label for = "password1">Password</label>
+                                     <input required class = "form-control" type="password" name = "pass1" id="password1" value = "{{ user_data.password }}" placeholder="Enter a password">
+                                     <input type="checkbox" onclick="showpass()"> Show Password
+                                 </div>
+
+                                 <div class = "form-group">
+                                     <label for = "email1">Email</label>
+                                     <input required class = "form-control" type="email" onchange="" name = "email1" id="email1" value = "{{  user_data.email }}" placeholder="Enter an email">
+                                </div>
+                                 <div class = "form-group">
+                                     <label>Gender</label>
+                                 </div>
+                                 <div class = "form-group">
+                                     <input type="radio" name = "rad" id = "radio1" value = "M" aria-label="Radio button" checked>
+                                     <span>Male</span>
+                                 </div>
+                                 <div class = "form-group">
+                                     <input type="radio" name = "rad" id = "radio2" value = "F" aria-label="Radio button">
+                                     <span>Female</span>
+                                 </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"><i class = "fa fa-chevron-circle-right"></i></button>
+                              </div>
+                              </form>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+				</div>
+            </div>
+            <footer class="page-footer font-small pt-4">
+			  <div class="footer-copyright">
+						<div class="linkcopy">
+							<a href="#">© 2021 Copyright.Made by Shayan Asghar</a>
+						</div>
+						<div class="icons">
+							<a href="#" class="fa fa-facebook"></a>
+							<a href="#" class="fa fa-instagram"></a>
+							<a href="#" class="fa fa-twitter"></a>
+						</div>
+				</div>
+			</footer>
+
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        function showpass() {
+  var x = document.getElementById("password1");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+
+
+}
+    </script>
+
+</body>
+</html>

@@ -3,7 +3,7 @@ from django.db import models
 
 # Create your models here.
 class Movie(models.Model):
-    movie_id = models.CharField(max_length=12, primary_key=True)
+    movie_id = models.CharField(max_length=30, primary_key=True)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     link = models.URLField()
@@ -13,8 +13,15 @@ class Movie(models.Model):
         return '{0} : {1} : {2} : {3}'.format(self.movie_id, self.name, self.link, str(self.year))
 
 
+class Rating(models.Model):
+    rating_id = models.CharField(max_length=30, primary_key=True)
+    user_id = models.CharField(max_length=30)
+    movie_id = models.CharField(max_length=30)
+    rating_value = models.IntegerField()
+
+
 class User(models.Model):
-    user_id = models.CharField(max_length=10, primary_key=True)
+    user_id = models.CharField(max_length=30, primary_key=True)
     name = models.CharField(max_length=200)
     password = models.CharField(max_length=20)
     gender = models.CharField(max_length=2,

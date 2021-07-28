@@ -25,10 +25,12 @@ def login(request):
                 else:
                     request.session['user'] = True
                     request.session['userId'] = login_id
-                    return HttpResponse(login_id)
+                    return render(request, 'user.html')
             except Exception:
                 return start(request, 'nouser')
 
+
+# -------------------------------------Admin PART------------------------------- #
 
 def userPage(request, added='no'):
     if request.session.get('admin', False):
@@ -124,7 +126,6 @@ def delMovie(request):
 def editMovie(request):
     if request.session.get('admin', False):
         movie_object = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
-        print(movie_object)
         return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object})
     else:
         return start(request)
@@ -151,3 +152,42 @@ def logoutadmin(request):
     except KeyError:
         pass
     return start(request)
+
+
+# -------------------------------------USER PART------------------------------- #
+def userHome(request):
+    if request.session.get('user', False):
+        return render(request, 'user.html')
+    else:
+        return start(request)
+
+
+def userLogout(request):
+    try:
+        del request.session['user']
+    except KeyError:
+        pass
+    return start(request)
+
+
+def userProfile(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        user_data = User.objects.filter(user_id=request.session['userId']).get()
+        return render(request, 'user_pages/editUser.html', {'user_data': user_data})
+    else:
+        return start(request)
+
+
+def saveUserEdit(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        if request.method == 'POST':
+            new_user = User.objects.filter(user_id=request.POST.get('user_id')).get()
+            new_user.name = request.POST.get('user_name')
+            new_user.password = request.POST.get('pass1')
+            new_user.email = request.POST.get('email1')
+            new_user.gender = request.POST.get('rad')
+
+            new_user.save()
+            return userHome(request)
+    else:
+        return start(request)
