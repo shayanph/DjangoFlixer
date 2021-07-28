@@ -29,8 +29,9 @@ def home(request):
     return render(request, 'admin.html')
 
 
-def moviePage(request):
-    return render(request, 'admin_pages/moviesData.html')
+def moviePage(request, added='no'):
+    moviesData = Movie.objects.all()
+    return render(request, 'admin_pages/moviesData.html', {'moviesData': moviesData, 'added': added})
 
 
 def searchMovie(request):
@@ -65,3 +66,40 @@ def editUser(request):
 
         new_user.save()
         return userPage(request, 'updated')
+
+
+def addMovie(request):
+    if request.method == 'POST':
+        new_movie = Movie()
+        new_movie.movie_id = request.POST.get('movie_id')
+        new_movie.name = request.POST.get('movie_name')
+        new_movie.link = request.POST.get('link')
+        new_movie.year = request.POST.get('year1')
+        new_movie.description = request.POST.get('des')
+
+        new_movie.save()
+        return moviePage(request, 'yes')
+
+
+def delMovie(request):
+    if request.method == 'POST':
+        Movie.objects.filter(movie_id=request.POST.get('movie_id')).delete()
+        return moviePage(request, 'deleted')
+
+
+def editMovie(request):
+    movie_object = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
+    print(movie_object)
+    return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object})
+
+
+def saveeditMovie(request):
+    if request.method == 'POST':
+        new_movie = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
+        new_movie.name = request.POST.get('movie_name')
+        new_movie.link = request.POST.get('link')
+        new_movie.year = request.POST.get('year1')
+        new_movie.description = request.POST.get('des')
+
+        new_movie.save()
+        return moviePage(request, 'updated')

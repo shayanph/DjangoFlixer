@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+        <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script>
+
+        $(function()
+            {
+                if ("{{ added }}" === "yes"){
+                    $("#alertgoodM").fadeIn();
+                }
+                else if("{{ added }}" === "deleted"){
+                    $("#alertbadM").fadeIn();
+                }
+                else if("{{ added }}" === "updated"){
+                    $("#alertupdateM").fadeIn();
+                }
+            });
+        </script>
         {% load static %}
 		<title>index</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +24,7 @@
 		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 	</head>
-	<body>
+	<body style="font-size: 12px;">
 		<div class="main">
 			<header class="header">
 				<nav class="navbar navbar-expand-lg navbar-light py-3">
@@ -41,13 +57,148 @@
 				  </div>
 				</nav>
 			</header>
-        </div>
+            <div class="content" style = "align-items: flex-start;">
+				<div class="container-fluid">
+                    <div class="alert alert-success alert-dismissible fade show" style = "display:none;" id = "alertgoodM" role="alert">
+                       <i class = "fa fa-check-circle-o"></i>
+                       <strong>Movie Added Successfully</strong>
+                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                   </div>
+                    <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertbadM" role="alert">
+                       <i class = "fa fa-warning"></i>
+                       <strong>Movie Deleted Successfully</strong>
+                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                    </div>
+                    <div class="alert alert-success alert-dismissible fade show" style = "display:none;" id = "alertupdateM" role="alert">
+                       <i class = "fa fa-warning"></i>
+                       <strong>Movie Updated Successfully</strong>
+                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                    </div>
+                    <div class = "moviesTable">
+                        <div class = "form-group">
+                            <input style = "width: 50% ; border:none; border-bottom: 3px solid red; font-size: 16px;" type="text" class = "searchBar" id="myInput" onkeyup="searchTable()" placeholder="Search for Movie names">
+                            <i class = "fa fa-search fa-2x"></i>
+                        </div>
+                        <table class = "table table-hover table-bordered" id = "myTable">
+                            <thead class = "thead-dark">
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Link</th>
+                                    <th>Year</th>
+                                    <th>Description</th>
+                                    <th>
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                                      Add Movie
+                                        <i class = "fa fa-plus-circle"></i>
+                                    </button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for lines in moviesData %}
+                                <tr>
+                                        <td id = 'movieId{{forloop.counter0}}'>{{ lines.movie_id}}</td>
+                                        <td>{{ lines.name}}</td>
+                                        <td class = "movieClass"><iframe src="{{ lines.link}}"></iframe></td>
+                                        <td>{{ lines.year }}</td>
+                                        <td>{{ lines.description }}</td>
+                                        <td id = "buttonGroup" style = "display: flex; justify-content: space-evenly;">
+                                         <form class = "buttonGroupForm" action="{% url 'Flixer:edit-movie' %}" method="post">
+                                            {% csrf_token %}
+                                            <input hidden name = "movie_id" value = {{ lines.movie_id }}>
+                                            <button class = "btn btn-outline-success" type="submit" ><i class = "fa fa-edit"></i></button>
+                                        </form>
+                                        <form class = "buttonGroupForm" action="{% url 'Flixer:del-movie' %}" onsubmit="return confirmUser()" method="post">
+                                            {% csrf_token %}
+                                            <input hidden name = "movie_id" value = {{ lines.movie_id }}>
+                                            <button class = "btn btn-outline-danger" type="submit" ><i class = "fa fa-remove"></i></button>
+                                        </form>
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <!-- Modal -->
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <form onsubmit = "event.preventDefault();  checkMovieId()" action = "{% url 'Flixer:add-movie'  %}" id = "formMovie" method="post">
+                      {% csrf_token %}
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add Movie</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                     <div class="modal-body">
+                         <div class = "form-group">
+                            <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertId" role="alert">
+                              <strong>Id Already Exists</strong>
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                             <label for = "userid">Movie Id</label>
+                             <input required class = "form-control" type="text" name = "movie_id" id="movieid" placeholder="Enter a movie Id">
+                         </div>
+                         <div class = "form-group">
+                            <label for = "username">Movie Name</label>
+                             <input required class = "form-control" type="text" name = "movie_name" id="username" placeholder="Enter a movie name">
+                         </div>
+                         <div class = "form-group">
+                             <label for = "link">Link</label>
+                             <input required class = "form-control" type="url" onchange="" name = "link" id="link1" placeholder="Enter only the movie link">
+                         </div>
+                         <div class = "form-group">
+                             <label for = "year">Year</label>
+                             <input required class = "form-control" type="number" min = '1990' max = '2021' name = "year1" id="year" placeholder="Enter year of release">
+                         </div>
+                         <div class = "form-group">
+                             <label for = "year">Description</label>
+                             <textarea required class = "form-control" type="text" id="desc" name = "des" placeholder="Description of the movie"></textarea>
+                         </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary"><i class = "fa fa-chevron-circle-right"></i></button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
 
+                    </div>
+				</div>
+            </div>
+
+            <footer class="page-footer font-small pt-4">
+			  <div class="footer-copyright">
+						<div class="linkcopy">
+							<a href="#">© 2020 Copyright.Made by Shayan Asghar</a>
+						</div>
+						<div class="icons">
+							<a href="#" class="fa fa-facebook"></a>
+							<a href="#" class="fa fa-instagram"></a>
+							<a href="#" class="fa fa-twitter"></a>
+						</div>
+				</div>
+			</footer>
+        </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
 </body>
 <script>
+        function confirmUser() {
+            return confirm("Are you sure you want to delete this movie ?")
+        }
     function show(){
         if (document.getElementById('hiddenForm').style.display === "none"){
             document.getElementById('hiddenForm').style.display = 'inline-block';
@@ -55,6 +206,44 @@
         else{
             document.getElementById('hiddenForm').style.display = 'none';
         }
+    }
+
+    function checkMovieId(){
+        let id = document.getElementById('movieid').value;
+        let found = false;
+        {% for lines in moviesData %}
+            if({{ lines.movie_id }} == id.toString())
+            {
+            $("#alertId").fadeIn();
+            found = true;
+            }
+        {% endfor %}
+        if(found === true){
+            return false;
+        }
+        else
+            document.getElementById('formMovie').submit();
+    }
+    function searchTable() {
+      // Declare variables
+      var input, filter, table, tr, td , i, txtValue;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("myTable");
+      tr = table.getElementsByTagName("tr");
+
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
     }
 </script>
 </html>

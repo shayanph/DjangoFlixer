@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+        <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+        {% load static %}
+		<title>index</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
+		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/styleUser.css' %}">
+	</head>
+	<body style="font-size: 12px;">
+
+		<div class="main">
+            <div class="content" style = "align-items: flex-start;">
+				<div class="container-fluid">
+                    <div class="fullscreen-bg">
+                        <iframe src="{{ movie_obj.link }}" class="fullscreen-bg__video" >
+                        </iframe>
+                    </div>
+                    <div class = "moviesTable">
+                        <div class="myform" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <form id = "formEdit" action = "{% url 'Flixer:save-edit-movie' %}" method="post">
+                                  {% csrf_token %}
+                                <div class="modal-header" style = "justify-content: space-around;">
+			                        <header class="header">
+                                        <nav class="navbar navbar-expand-lg navbar-light py-3">
+                                          <a class="navbar-brand" href="{% url 'Flixer:home' %}" style="font-size: 15px;"><strong>MyFlixer</strong></a>
+                                          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                            <span class="navbar-toggler-icon"></span>
+                                          </button>
+
+                                          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                            <ul class="navbar-nav ml-auto" id ="centerUl">
+                                                    <li class="nav-item ">
+                                                <a class="nav-link px-3" href="{% url 'Flixer:home' %}">Home</a>
+                                              </li>
+                                              <li class="nav-item">
+                                                <a class="nav-link px-3" href="{% url 'Flixer:user-page' %}">Edit user</a>
+                                              </li>
+                                              <li class="nav-item active">
+                                                <a class="nav-link px-3" href="{% url 'Flixer:movie-page' %}">Edit Movies</a>
+                                              </li>
+                                            </ul>
+                                          </div>
+                                        </nav>
+                                    </header>
+                                </div>
+                             <div class="modal-body">
+                                 <div class = "form-group">
+                                     <label for = "userid">Movie Id</label>
+                                     <input readonly class = "form-control" type="text" name = "movie_id" id="movieid" value = "{{ movie_obj.movie_id }}" placeholder="Enter a movie Id">
+                                 </div>
+                                 <div class = "form-group">
+                                    <label for = "username">Movie Name</label>
+                                     <input required class = "form-control" type="text" name = "movie_name" id="username" value ="{{ movie_obj.name }}" placeholder="Enter a movie name">
+                                 </div>
+                                 <div class = "form-group">
+                                     <label for = "link">Link</label>
+                                     <input required class = "form-control" type="url" onchange="" name = "link" id="link1" value = "{{ movie_obj.link }}" placeholder="Enter only the movie link">
+                                 </div>
+                                 <div class = "form-group">
+                                     <label for = "year">Year</label>
+                                     <input required class = "form-control" type="number" min = '1990' max = '2021' value = "{{ movie_obj.year }}" name = "year1" id="year" placeholder="Enter year of release">
+                                 </div>
+                                 <div class = "form-group">
+                                     <label for = "year">Description</label>
+                                     <textarea required class = "form-control" type="text" id="desc" name = "des" placeholder="Description of the movie">{{ movie_obj.description }}</textarea>
+                                 </div>
+                             </div>
+                              <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"><i class = "fa fa-chevron-circle-right"></i></button>
+                              </div>
+                              </form>
+                            <footer class="page-footer font-small pt-4">
+			  <div class="footer-copyright">
+						<div class="linkcopy">
+							<a href="#">© 2020 Copyright.Made by Shayan Asghar</a>
+						</div>
+						<div class="icons">
+							<a href="#" class="fa fa-facebook"></a>
+							<a href="#" class="fa fa-instagram"></a>
+							<a href="#" class="fa fa-twitter"></a>
+						</div>
+				</div>
+			</footer>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+				</div>
+            </div>
+
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>

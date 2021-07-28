@@ -10,7 +10,7 @@ class Movie(models.Model):
     year = models.IntegerField()
 
     def __str__(self):
-            return '{0} : {1} : {2} : {3}'.format(self.movie_id, self.name, self.link, str(self.year))
+        return '{0} : {1} : {2} : {3}'.format(self.movie_id, self.name, self.link, str(self.year))
 
 
 class User(models.Model):
