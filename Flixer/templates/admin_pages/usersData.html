@@ -52,6 +52,11 @@
                               </form>
                           </div>
 				      </li>
+                      <li class="nav-item" style="align-self: center">
+                        <div id = "logoutform">
+                        <a href = "{% url 'Flixer:logout-admin' %}"><button class = "btn btn-danger btn-sm"><i class = "fa fa-sign-out"></i></button></a>
+                        </div>
+                      </li>
 				    </ul>
 				  </div>
 				</nav>
@@ -264,7 +269,6 @@
         </div>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 		<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <script src="http://code.jquery.com/jquery.js"></script>
 </body>
 
 <script>

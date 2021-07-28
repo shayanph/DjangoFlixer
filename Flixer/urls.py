@@ -9,6 +9,7 @@ urlpatterns = [
     path('home/', views.home, name="home"),
 
     # ADMIN MODULE URLS
+    path('home/logout/', views.logoutadmin, name="logout-admin"),
     path('home/users/', views.userPage, name="user-page"),
     path('home/movies/', views.moviePage, name="movie-page"),
     path('home/searchMovie', views.searchMovie, name="movie-search"),
