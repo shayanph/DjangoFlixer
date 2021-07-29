@@ -28,4 +28,5 @@ urlpatterns = [
     path('home/saveeditUser', views.saveUserEdit, name="save-edit-user"),
     path('home/movieSearch', views.movieSearch, name="search-movie"),
     path('home/viewMovie', views.viewMovie, name="see-movie"),
+    path('home/saveRating', views.saveRating, name="rate-movie"),
 ]

@@ -217,14 +217,24 @@ def movieSearch(request):
             rating_list = []
             total_users = []
             for obj in movieList:
-                rating = Rating.objects.filter(movie_id=obj.movie_id).aggregate(Sum('rating_value'))
+                total = 0
+                for i in range(5):
+                    total_user_rating = Rating.objects.filter(movie_id=obj.movie_id,
+                                                              rating_value=i + 1).count()
+                    if total_user_rating == 0:
+                        rating_val = 0
+                    else:
+                        rating_val = (i + 1) * total_user_rating
+                    total = total + rating_val
+
                 total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
-                if rating['rating_value__sum'] is None:
+
+                if total == 0:
                     rating_list.append(0)
                 else:
-                    avgrate = rating['rating_value__sum'] / (5 * total_user)
+                    avgrate = total / total_user
                     rating_list.append(avgrate)
-                total_users.append(total_user)
+                    total_users.append(total_user)
             if len(movieList) == 1:
                 found = True
             else:
@@ -244,14 +254,74 @@ def viewMovie(request):
             new_movie = Movie.objects.filter(movie_id=request.GET.get('movieId')).get()
             rating = Rating.objects.filter(movie_id=new_movie.movie_id).aggregate(Sum('rating_value'))
             total_user = Rating.objects.filter(movie_id=new_movie.movie_id).count()
-            if rating['rating_value__sum'] is None:
-                rating_val = 0
+            user_rating = Rating.objects.filter(movie_id=new_movie.movie_id,
+                                                user_id=request.session['userId']).count()
+            if user_rating == 0:
+                user_rating = 0
             else:
-                rating_val = rating['rating_value__sum'] / (5 * total_user)
+                user_rating = Rating.objects.filter(movie_id=new_movie.movie_id,
+                                                    user_id=request.session['userId']).get().rating_value
+            total = 0
+            for i in range(5):
+                total_user_rating = Rating.objects.filter(movie_id=new_movie.movie_id,
+                                                          rating_value=i + 1).count()
+
+                if total_user_rating == 0:
+                    rating_val = 0
+                else:
+                    rating_val = (i + 1) * total_user_rating
+                total = total + rating_val
+
+            total_user = Rating.objects.filter(movie_id=new_movie.movie_id).count()
+
             return render(request, 'user_pages/showMovie.html', {'movie': new_movie,
-                                                                 'rating': rating_val,
-                                                                 'total': total_user})
+                                                                 'rating': total / total_user,
+                                                                 'total': total_user,
+                                                                 'userrating': user_rating})
         else:
             return start(request)
+    else:
+        return start(request)
+
+
+def viewMovieAgain(request, movie_id, rat):
+    new_movie = Movie.objects.filter(movie_id=movie_id).get()
+    total = 0
+    for i in range(5):
+        total_user_rating = Rating.objects.filter(movie_id=movie_id,
+                                                  rating_value=i + 1).count()
+        if total_user_rating == 0:
+            rating_val = 0
+        else:
+            rating_val = (i + 1) * total_user_rating
+        total = total + rating_val
+
+    total_user = Rating.objects.filter(movie_id=movie_id).count()
+
+    return render(request, 'user_pages/showMovie.html', {'movie': new_movie,
+                                                         'rating': total / total_user,
+                                                         'total': total_user,
+                                                         'userrating': rat})
+
+
+def saveRating(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        if request.method == 'POST':
+            ratingvalue = request.POST.get('star')
+            movie_id = request.POST.get('movie_id')
+            user_id = request.session['userId']
+
+            if Rating.objects.filter(user_id=user_id, movie_id=movie_id).count() == 0:
+                rating_obj = Rating()
+                rating_obj.movie_id = movie_id
+                rating_obj.user_id = user_id
+                rating_obj.rating_id = ratingvalue
+                rating_obj.save()
+            else:
+                obj = Rating.objects.filter(user_id=user_id, movie_id=movie_id).get()
+                obj.rating_value = ratingvalue
+                obj.save()
+            return viewMovieAgain(request, movie_id, ratingvalue)
+        return HttpResponse(movie_id)
     else:
         return start(request)

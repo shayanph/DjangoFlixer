@@ -17,7 +17,7 @@ class Rating(models.Model):
     rating_id = models.CharField(max_length=30, primary_key=True)
     user_id = models.CharField(max_length=30)
     movie_id = models.CharField(max_length=30)
-    rating_value = models.IntegerField()
+    rating_value = models.CharField(max_length=1)
 
 
 class User(models.Model):
