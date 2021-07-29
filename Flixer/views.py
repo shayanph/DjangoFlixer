@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render
 from Flixer.models import *
@@ -155,9 +156,9 @@ def logoutadmin(request):
 
 
 # -------------------------------------USER PART------------------------------- #
-def userHome(request):
+def userHome(request, found='True'):
     if request.session.get('user', False):
-        return render(request, 'user.html')
+        return render(request, 'user.html', {'found': found})
     else:
         return start(request)
 
@@ -189,5 +190,68 @@ def saveUserEdit(request):
 
             new_user.save()
             return userHome(request)
+    else:
+        return start(request)
+
+
+def movieSearch(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        movie_name = request.POST.get('movie_name').lower()
+        movieList = []
+
+        for obj in Movie.objects.all():
+            if obj.name.lower() == movie_name:
+                movieList.append(obj)
+
+        for obj in Movie.objects.all():
+            if obj.name.split(' ')[0].lower() == movie_name.split(' ')[0]:
+                if obj not in movieList:
+                    movieList.append(obj)
+
+        for obj in Movie.objects.all():
+            if obj.name.split(' ')[0][0].lower() == movie_name.split(' ')[0][0]:
+                if obj not in movieList:
+                    movieList.append(obj)
+
+        if len(movieList) != 0:
+            rating_list = []
+            total_users = []
+            for obj in movieList:
+                rating = Rating.objects.filter(movie_id=obj.movie_id).aggregate(Sum('rating_value'))
+                total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
+                if rating['rating_value__sum'] is None:
+                    rating_list.append(0)
+                else:
+                    avgrate = rating['rating_value__sum'] / (5 * total_user)
+                    rating_list.append(avgrate)
+                total_users.append(total_user)
+            if len(movieList) == 1:
+                found = True
+            else:
+                found = False
+
+            zipped_List = zip(movieList, rating_list, total_users)
+            return render(request, 'user_pages/movie_search.html', {'movie': zipped_List,
+                                                                    'found': found})
+        return userHome(request, 'False')
+    else:
+        return start(request)
+
+
+def viewMovie(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        if request.method == 'GET':
+            new_movie = Movie.objects.filter(movie_id=request.GET.get('movieId')).get()
+            rating = Rating.objects.filter(movie_id=new_movie.movie_id).aggregate(Sum('rating_value'))
+            total_user = Rating.objects.filter(movie_id=new_movie.movie_id).count()
+            if rating['rating_value__sum'] is None:
+                rating_val = 0
+            else:
+                rating_val = rating['rating_value__sum'] / (5 * total_user)
+            return render(request, 'user_pages/showMovie.html', {'movie': new_movie,
+                                                                 'rating': rating_val,
+                                                                 'total': total_user})
+        else:
+            return start(request)
     else:
         return start(request)

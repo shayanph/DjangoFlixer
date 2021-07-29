@@ -4,34 +4,12 @@
         {% load static %}
 		<title>index</title>
         <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
-        <script>
-            $(function()
-            {
-                if ("{{ found }}" === 'False'){
-                    $("#alertgood").fadeIn();
-                }
-            });
-        </script>
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/font-awesome.min.css' %}">
 		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-        <style>
-        .formSearch{
-            display: flex;
-            justify-content: center;
-        }
 
-        .formSearch input{
-            border: none;
-            border-bottom: 3px solid red;
-            border-radius: 0;
-        }
-        .formSearch input:focus {
-            border-color: #0d0e2d;
-            outline-color: #0d0e2d;
-        }
-        </style>
     </head>
 	<body>
 		<div class="main">
@@ -61,25 +39,27 @@
 			</header>
 			<div class="content">
 				<div class="container-fluid">
-                    <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertgood" role="alert">
-                       <i class = "fa fa-remove"></i>
-                       <strong>Movie Not Found</strong>
-                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                           <span aria-hidden="true">&times;</span>
-                       </button>
-                   </div>
-                    <div class = "searchBar">
-                        <form class = "formSearch" method = 'post' action = {% url 'Flixer:search-movie' %}>
-                            {% csrf_token %}
-                            <div class = "form-group mr-auto" style = "width: 100%;">
-                                <input class = "form-control" type="search" name = "movie_name" placeholder = "Enter a movie name to search">
-                            </div>
-                            <div class = "form-group mr-auto">
-                                <button class = "btn btn-outline-dark">
-                                    <i class = "fa fa-search"></i>
-                                </button>
-                            </div>
-                        </form>
+                    <div class="card mb-3">
+                        <iframe frameborder="0" style="min-height: 500px;" src = "{{ movie.link }}">
+                                </iframe>
+                                <div class="card-header">
+                                    {{ movie.name }}
+                                </div>
+                                <div class="card-body">
+
+                                    <p class="card-text">
+                                        {{ movie.description }}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <small>
+                                        <span class="heading">User Rating</span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <span class="fa fa-star checked"></span>
+                                        <p>{{ rating }} average based on {{ total }} reviews.</p>
+                                    </small>
+                                </div>
                     </div>
                 </div>
 			</div>

@@ -32,7 +32,6 @@ body {
   -webkit-transition: width 0.4s ease-in-out;
   transition: width 0.4s ease-in-out;
 }
-
 .searchBarHeader input[type=text]:focus{
   width: 100%;
 }

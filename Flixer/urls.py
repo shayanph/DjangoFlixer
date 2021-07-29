@@ -26,5 +26,6 @@ urlpatterns = [
     path('user/logout', views.userLogout, name="user-logout"),
     path('user/profile', views.userProfile, name="user-profile"),
     path('home/saveeditUser', views.saveUserEdit, name="save-edit-user"),
-
+    path('home/movieSearch', views.movieSearch, name="search-movie"),
+    path('home/viewMovie', views.viewMovie, name="see-movie"),
 ]
