@@ -26,7 +26,7 @@ def login(request):
                 else:
                     request.session['user'] = True
                     request.session['userId'] = login_id
-                    return render(request, 'user.html')
+                    return userHome(request)
             except Exception:
                 return start(request, 'nouser')
 
@@ -160,17 +160,18 @@ def userHome(request, found='True'):
     if request.session.get('user', False):
         movies = Movie.objects.all()
         ratings = []
+        users = []
         for obj in movies:
             total = findRating(obj.movie_id)
             total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
-
+            users.append(total_user)
             if total == 0:
                 ratings.append(0)
             else:
                 avgrate = total / total_user
                 ratings.append(avgrate)
 
-        zippedlist = zip(movies, ratings)
+        zippedlist = zip(movies, users, ratings)
         zippedlist = sorted(zippedlist, key=lambda x: x[len(x) - 1], reverse=True)
 
         if len(zippedlist) < 10:
@@ -290,9 +291,12 @@ def viewMovie(request):
             total = findRating(new_movie.movie_id)
 
             total_user = Rating.objects.filter(movie_id=new_movie.movie_id).count()
-
+            if total_user == 0:
+                rating_send = 0
+            else:
+                rating_send = total / total_user
             return render(request, 'user_pages/showMovie.html', {'movie': new_movie,
-                                                                 'rating': total / total_user,
+                                                                 'rating': rating_send,
                                                                  'total': total_user,
                                                                  'userrating': user_rating})
         else:
@@ -306,9 +310,12 @@ def viewMovieAgain(request, movie_id, rat):
     total = findRating(movie_id)
 
     total_user = Rating.objects.filter(movie_id=movie_id).count()
-
+    if total_user == 0:
+        rating_send = 0
+    else:
+        rating_send = total / total_user
     return render(request, 'user_pages/showMovie.html', {'movie': new_movie,
-                                                         'rating': total / total_user,
+                                                         'rating': rating_send,
                                                          'total': total_user,
                                                          'userrating': rat})
 

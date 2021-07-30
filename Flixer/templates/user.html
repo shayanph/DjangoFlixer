@@ -17,6 +17,19 @@
 		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
         <style>
+        a:hover{
+            text-decoration:none;
+            color: inherit;
+        }
+        .card:hover{
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+            background: linear-gradient(
+            45deg,
+            rgba(29, 236, 197, 0.5),
+            rgba(91, 14, 214, 0.5) 100%
+          );
+        }
         .formSearch{
             display: flex;
             justify-content: center;
@@ -30,6 +43,27 @@
         .formSearch input:focus {
             border-color: #0d0e2d;
             outline-color: #0d0e2d;
+        }
+        .searchBar{
+            padding: 300px 0px;
+        }
+        @media (min-width: 900px) {
+        .card-group.card-group-scroll {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .card-group.card-group-scroll > .card {
+            flex-basis: 35%;
+        }
+        .topTen a ,.card{
+            background-color: lightgray;
+        }
+        .topTen{
+            background-color: lightgray;
+        }
+        .headerTop{
+            padding: 20px 20px;
         }
         </style>
     </head>
@@ -81,7 +115,36 @@
                             </div>
                         </form>
                     </div>
-                    {{ moviesTop }}
+                    <div class = "topTen">
+                        <div class = "headerTop">
+                            <h4>Top Ten Movies</h4>
+                        </div>
+                        <div class = "card-group card-group-scroll ">
+                        {% for movie , total  , total in moviesTop%}
+                            <div class="card mb-3" style="max-width: 20rem;">
+                            <a class = "card mb-3" href = "{% url 'Flixer:see-movie' %}?movieId={{ movie.movie_id }}">
+                                <iframe class = "card-img-top" src = "{{ movie.link }}">
+                                </iframe>
+                                <div class="card-header">
+                                    {{ movie.name }}
+                                </div>
+                                <div class="card-body">
+
+                                    <p class="card-text">
+                                        {{ movie.description }}
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <small>
+                                        <span class="heading">User Rating</span>
+                                        <p>{{ rating }} average based on {{ total }} reviews.</p>
+                                    </small>
+                                </div>
+                            </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    </div>
                 </div>
 			</div>
 			<footer class="page-footer font-small pt-4">
