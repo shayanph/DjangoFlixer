@@ -158,7 +158,27 @@ def logoutadmin(request):
 # -------------------------------------USER PART------------------------------- #
 def userHome(request, found='True'):
     if request.session.get('user', False):
-        return render(request, 'user.html', {'found': found})
+        movies = Movie.objects.all()
+        ratings = []
+        for obj in movies:
+            total = findRating(obj.movie_id)
+            total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
+
+            if total == 0:
+                ratings.append(0)
+            else:
+                avgrate = total / total_user
+                ratings.append(avgrate)
+
+        zippedlist = zip(movies, ratings)
+        zippedlist = sorted(zippedlist, key=lambda x: x[len(x) - 1], reverse=True)
+
+        if len(zippedlist) < 10:
+            sliced = zippedlist
+        else:
+            sliced = zippedlist[0:10]
+
+        return render(request, 'user.html', {'found': found, 'moviesTop': sliced})
     else:
         return start(request)
 
@@ -194,6 +214,20 @@ def saveUserEdit(request):
         return start(request)
 
 
+def findRating(movie):
+    total = 0
+    for i in range(5):
+        total_user_rating = Rating.objects.filter(movie_id=movie,
+                                                  rating_value=i + 1).count()
+        if total_user_rating == 0:
+            rating_val = 0
+        else:
+            rating_val = (i + 1) * total_user_rating
+        total = total + rating_val
+
+    return total
+
+
 def movieSearch(request):
     if request.session.get('admin', False) or request.session.get('user', False):
         movie_name = request.POST.get('movie_name').lower()
@@ -217,16 +251,8 @@ def movieSearch(request):
             rating_list = []
             total_users = []
             for obj in movieList:
-                total = 0
-                for i in range(5):
-                    total_user_rating = Rating.objects.filter(movie_id=obj.movie_id,
-                                                              rating_value=i + 1).count()
-                    if total_user_rating == 0:
-                        rating_val = 0
-                    else:
-                        rating_val = (i + 1) * total_user_rating
-                    total = total + rating_val
-
+                total = findRating(obj.movie_id)
+                print(total)
                 total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
 
                 if total == 0:
@@ -261,16 +287,7 @@ def viewMovie(request):
             else:
                 user_rating = Rating.objects.filter(movie_id=new_movie.movie_id,
                                                     user_id=request.session['userId']).get().rating_value
-            total = 0
-            for i in range(5):
-                total_user_rating = Rating.objects.filter(movie_id=new_movie.movie_id,
-                                                          rating_value=i + 1).count()
-
-                if total_user_rating == 0:
-                    rating_val = 0
-                else:
-                    rating_val = (i + 1) * total_user_rating
-                total = total + rating_val
+            total = findRating(new_movie.movie_id)
 
             total_user = Rating.objects.filter(movie_id=new_movie.movie_id).count()
 
@@ -286,15 +303,7 @@ def viewMovie(request):
 
 def viewMovieAgain(request, movie_id, rat):
     new_movie = Movie.objects.filter(movie_id=movie_id).get()
-    total = 0
-    for i in range(5):
-        total_user_rating = Rating.objects.filter(movie_id=movie_id,
-                                                  rating_value=i + 1).count()
-        if total_user_rating == 0:
-            rating_val = 0
-        else:
-            rating_val = (i + 1) * total_user_rating
-        total = total + rating_val
+    total = findRating(movie_id)
 
     total_user = Rating.objects.filter(movie_id=movie_id).count()
 
