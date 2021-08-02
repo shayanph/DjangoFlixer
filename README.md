@@ -13,12 +13,10 @@ git clone https://github.com/shayanph/DjangoFlixer/
 or Clone the project using IDE's built in clone function.  
 5. Run command on terminal 
 ```
-python3 manage.py runserver 9000[or Any port]
+python3 manage.py runserver
 ```
 6. Credentials for admin
 ```
 Id: admin
 password : admin
 ```
-
-## Overview
