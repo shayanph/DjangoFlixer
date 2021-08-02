@@ -1,5 +1,4 @@
 from django.db.models import Sum
-from django.http import HttpResponse
 from django.shortcuts import render
 from Flixer.models import *
 
@@ -51,13 +50,12 @@ def home(request):
 def moviePage(request, added='no'):
     if request.session.get('admin', False):
         moviesData = Movie.objects.all()
-        return render(request, 'admin_pages/moviesData.html', {'moviesData': moviesData, 'added': added})
+        categories = Category.objects.all()
+        return render(request, 'admin_pages/moviesData.html', {'moviesData': moviesData,
+                                                               'added': added,
+                                                               'categories': categories})
     else:
         return start(request)
-
-
-def searchMovie(request):
-    return HttpResponse(request.POST.get('search'))
 
 
 def deleteUser(request):
@@ -108,7 +106,7 @@ def addMovie(request):
             new_movie.link = request.POST.get('link')
             new_movie.year = request.POST.get('year1')
             new_movie.description = request.POST.get('des')
-
+            new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
             new_movie.save()
             return moviePage(request, 'yes')
     else:
@@ -127,7 +125,9 @@ def delMovie(request):
 def editMovie(request):
     if request.session.get('admin', False):
         movie_object = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
-        return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object})
+        categories = Category.objects.all()
+        return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object,
+                                                              'categories': categories})
     else:
         return start(request)
 
@@ -140,11 +140,23 @@ def saveeditMovie(request):
             new_movie.link = request.POST.get('link')
             new_movie.year = request.POST.get('year1')
             new_movie.description = request.POST.get('des')
-
+            new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
             new_movie.save()
             return moviePage(request, 'updated')
     else:
         return start(request)
+
+
+def addCat(request):
+    if request.session.get('admin', False):
+        if request.method == 'POST':
+            catname = request.POST.get('category')
+            category = Category()
+            category.cat_name = catname
+
+            category.save()
+
+            return moviePage(request)
 
 
 def logoutadmin(request):
@@ -178,8 +190,8 @@ def userHome(request, found='True'):
             sliced = zippedlist
         else:
             sliced = zippedlist[0:10]
-
-        return render(request, 'user.html', {'found': found, 'moviesTop': sliced})
+        category = Category.objects.all()
+        return render(request, 'user.html', {'found': found, 'moviesTop': sliced, 'categories': category})
     else:
         return start(request)
 
@@ -253,23 +265,26 @@ def movieSearch(request):
             total_users = []
             for obj in movieList:
                 total = findRating(obj.movie_id)
-                print(total)
                 total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
 
                 if total == 0:
                     rating_list.append(0)
+                    total_users.append(total_user)
                 else:
                     avgrate = total / total_user
                     rating_list.append(avgrate)
                     total_users.append(total_user)
-            if len(movieList) == 1:
+            if len(movieList) >= 1:
                 found = True
             else:
                 found = False
 
             zipped_List = zip(movieList, rating_list, total_users)
+            category = Category.objects.all()
+
             return render(request, 'user_pages/movie_search.html', {'movie': zipped_List,
-                                                                    'found': found})
+                                                                    'found': found,
+                                                                    'categories': category})
         return userHome(request, 'False')
     else:
         return start(request)
@@ -338,6 +353,39 @@ def saveRating(request):
                 obj.rating_value = ratingvalue
                 obj.save()
             return viewMovieAgain(request, movie_id, ratingvalue)
-        return HttpResponse(movie_id)
+    else:
+        return start(request)
+
+
+def viewMoviegenre(request):
+    if request.session.get('admin', False) or request.session.get('user', False):
+        cat_obj = Category.objects.filter(category_id=request.GET.get('cat_id')).get()
+        movies = Movie.objects.filter(category=cat_obj)
+
+        rating_list = []
+        total_users = []
+        for obj in movies:
+            total = findRating(obj.movie_id)
+            total_user = Rating.objects.filter(movie_id=obj.movie_id).count()
+
+            if total == 0:
+                rating_list.append(0)
+                total_users.append(total_user)
+            else:
+                avgrate = total / total_user
+                rating_list.append(avgrate)
+                total_users.append(total_user)
+
+        if len(movies) >= 1:
+            found = True
+        else:
+            found = False
+
+        zipped_List = zip(movies, rating_list, total_users)
+        category = Category.objects.all()
+
+        return render(request, 'user_pages/movie_search.html', {'movie': zipped_List,
+                                                                'found': found,
+                                                                'categories': category})
     else:
         return start(request)

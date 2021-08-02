@@ -8,6 +8,15 @@
 		<link rel="stylesheet" type = "text/css" href="{% static 'css/bootstrap.min.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
         <style>
+            .categoryText{
+                position: absolute;
+                border-radius: 2px;
+                z-index: 5;
+                padding: 10px;
+                margin: 10px;
+                background-color: white;
+            }
+
             a:hover{
                 text-decoration:none;
                 color: inherit;
@@ -20,6 +29,16 @@
                 rgba(29, 236, 197, 0.5),
                 rgba(91, 14, 214, 0.5) 100%
               );
+            }
+            @media (min-width: 900px) {
+            .card-deck.card-deck-scroll {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .card-deck.card-deck-scroll > .card {
+                flex-basis: 50%;
+            }
             }
         </style>
     </head>
@@ -34,6 +53,18 @@
 
 				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 				    <ul class="navbar-nav ml-auto" id ="centerUl">
+                         <li class="nav-item">
+                            <div class="dropdown">
+                              <button class="btn btn-outline-dark" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <i class = "fa fa-filter"></i>
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                  {% for cats in categories %}
+                                    <a class="dropdown-item" href="{% url 'Flixer:see-movie-genre' %}?cat_id={{ cats.category_id }}">{{ cats.cat_name }}</a>
+                                  {% endfor %}
+                              </div>
+                            </div>
+                        </li>
                         <li class="nav-item active">
                             <a class="nav-link px-3" href="{% url 'Flixer:user-home' %}">Home</a>
                         </li>
@@ -51,10 +82,16 @@
 			</header>
 			<div class="content">
 				<div class="container-fluid">
-                    <div class = "card-deck ">
+                    {% if not found %}
+                        <h1 style = "text-align: center">No result found</h1>
+                    {% endif %}
+                    <div class = "card-deck card-deck-scroll">
                         {% for movie , rating  , total in movie%}
                             <div class="card mb-3" style="max-width: 20rem;">
                             <a class = "card mb-3" href = "{% url 'Flixer:see-movie' %}?movieId={{ movie.movie_id }}">
+                                <div class = "categoryText">
+                                    {{ movie.category.cat_name }}
+                                </div>
                                 <iframe class = "card-img-top" src = "{{ movie.link }}">
                                 </iframe>
                                 <div class="card-header">

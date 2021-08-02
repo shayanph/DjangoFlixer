@@ -3,7 +3,6 @@
 	<head>
         <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
         <script>
-
         $(function()
             {
                 if ("{{ added }}" === "yes"){
@@ -44,16 +43,7 @@
 				      <li class="nav-item active">
 				        <a class="nav-link px-3" href="{% url 'Flixer:movie-page' %}">Edit Movies</a>
 				      </li>
-                      <li class="nav-item" style="align-self: center">
-                          <button class = "buttonSearch" onclick = "show()"><i class ="fa fa-search" ></i></button>
-                          <div id = "hiddenForm" style = "display: none ; align-self: center">
-                              <form action="{% url 'Flixer:movie-search' %}" method="post" class = "searchBarHeader">
-                                  {% csrf_token %}
-                                  <input type="text" name="search" placeholder="Enter movie name..">
-                              </form>
-                          </div>
-				      </li>
-                      <li class="nav-item" style="align-self: center">
+                      <li class="nav-item">
                         <div id = "logoutform">
                         <a href = "{% url 'Flixer:logout-admin' %}"><button class = "btn btn-danger btn-sm"><i class = "fa fa-sign-out"></i></button></a>
                         </div>
@@ -98,6 +88,24 @@
                                     <th>Link</th>
                                     <th>Year</th>
                                     <th>Description</th>
+                                    <th>Category</th>
+                                    <th>
+                                        <div class="btn-group dropleft">
+                                              <button type="button" class="btn btn-danger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                  Add Category
+                                                  <i class = "fa fa-plus-circle"></i>
+                                              </button>
+                                              <div class="dropdown-menu dropdown-menu-left">
+                                                <form class="dropdown-item" method = 'post' action="{% url 'Flixer:add-category-movie' %}">
+                                                    {% csrf_token %}
+                                                    <input type = "text" name = "category" placeholder = "Enter a category name">
+                                                    <button class = "btn btn-outline-danger" type = "submit">Add</button>
+                                                </form>
+
+                                            </div>
+                                        </div>
+
+                                    </th>
                                     <th>
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
@@ -115,6 +123,8 @@
                                         <td class = "movieClass"><iframe src="{{ lines.link}}"></iframe></td>
                                         <td>{{ lines.year }}</td>
                                         <td>{{ lines.description }}</td>
+                                        <td>{{ lines.category.cat_name }}</td>
+                                        <td></td>
                                         <td id = "buttonGroup" style = "display: flex; justify-content: space-evenly;">
                                          <form class = "buttonGroupForm" action="{% url 'Flixer:edit-movie' %}" method="post">
                                             {% csrf_token %}
@@ -170,6 +180,21 @@
                              <label for = "year">Description</label>
                              <textarea required class = "form-control" type="text" id="desc" name = "des" placeholder="Description of the movie"></textarea>
                          </div>
+
+                         <div class = "form-group">
+                          <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertId1" role="alert">
+                              <strong>Please select a category</strong>
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                          <select id = "selectcheck" name = "select1" class="form-control">
+                              <option  value="-1" disabled selected>Select a category</option>
+                              {% for cat in categories %}
+                              <option value="{{ cat.category_id }}">{{ cat.cat_name }}</option>
+                              {% endfor %}
+                            </select>
+                         </div>
                       </div>
                       <div class="modal-footer">
                         <button type="submit" class="btn btn-primary"><i class = "fa fa-chevron-circle-right"></i></button>
@@ -216,6 +241,11 @@
     function checkMovieId(){
         let id = document.getElementById('movieid').value;
         let found = false;
+
+        if (document.getElementById('selectcheck').value === "-1"){
+            $("#alertId1").fadeIn();
+            found = true;
+        }
         {% for lines in moviesData %}
             if({{ lines.movie_id }} == id.toString())
             {
@@ -226,8 +256,9 @@
         if(found === true){
             return false;
         }
-        else
-            document.getElementById('formMovie').submit();
+
+
+        document.getElementById('formMovie').submit();
     }
     function searchTable() {
       // Declare variables

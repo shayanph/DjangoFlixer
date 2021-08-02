@@ -6,3 +6,4 @@ from Flixer.models import *
 admin.site.register(User)
 admin.site.register(Movie)
 admin.site.register(Rating)
+admin.site.register(Category)

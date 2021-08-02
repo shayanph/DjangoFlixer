@@ -22,7 +22,9 @@ body {
   justify-content: space-evenly;
   align-items: center;
 }
-
+.btn-group button{
+  border:none;
+}
 .searchBarHeader input[type=text] {
   width: 60px;
   border: none;

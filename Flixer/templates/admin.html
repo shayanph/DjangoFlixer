@@ -28,15 +28,6 @@
 				      <li class="nav-item">
 				        <a class="nav-link px-3" href="{% url 'Flixer:movie-page' %}">Edit Movies</a>
 				      </li>
-                      <li class="nav-item" style="align-self: center">
-                          <button class = "buttonSearch" onclick = "show()"><i class ="fa fa-search" ></i></button>
-                          <div id = "hiddenForm" style = "display: none ; align-self: center">
-                              <form action="{% url 'Flixer:movie-search' %}" method="post" class = "searchBarHeader">
-                                  {% csrf_token %}
-                                  <input type="text" name="search" placeholder="Enter movie name..">
-                              </form>
-                          </div>
-				      </li>
 
                       <li class="nav-item" style="align-self: center">
                         <div id = "logoutform">

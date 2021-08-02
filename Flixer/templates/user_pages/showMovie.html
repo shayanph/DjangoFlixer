@@ -70,6 +70,7 @@
 
 				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 				    <ul class="navbar-nav ml-auto" id ="centerUl">
+
                         <li class="nav-item active">
                             <a class="nav-link px-3" href="{% url 'Flixer:user-home' %}">Home</a>
                         </li>
@@ -100,6 +101,9 @@
                                     </p>
                                 </div>
                                 <div class="card-footer">
+                                    <div class = "categoryText">
+                                    <h6>Category: {{ movie.category.cat_name }} </h6>
+                                    </div>
                                     <small>
                                         <span class="heading">User Rating</span>
                                         <span class="fa fa-star checked"></span>
@@ -123,7 +127,6 @@
                                       <label class="star star-1" for="star-1"></label>
                                       <input hidden name = "movie_id" value = {{ movie.movie_id }}>
                                   </form>
-
                                     <div>
                                         <p>Rate the movie</p>
                                     </div>
