@@ -7,3 +7,6 @@ A simple movie searching app that lets you view and rate movies with an admin pa
 1. Download a python interpreter from the official python site
 2. Install a python IDE e.g Pycharm
 3. Clone the project on terminal using command 
+`
+git clone
+`
