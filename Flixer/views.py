@@ -331,7 +331,7 @@ def saveRating(request):
                 rating_obj = Rating()
                 rating_obj.movie_id = movie_id
                 rating_obj.user_id = user_id
-                rating_obj.rating_id = ratingvalue
+                rating_obj.rating_value = ratingvalue
                 rating_obj.save()
             else:
                 obj = Rating.objects.filter(user_id=user_id, movie_id=movie_id).get()
