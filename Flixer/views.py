@@ -1,3 +1,6 @@
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render
 from Flixer.models import *
@@ -7,163 +10,155 @@ def start(request, defaurg='ok'):
     return render(request, 'login.html', {'defAurg': defaurg})
 
 
-def login(request):
-    admin_id = 'admin'
-    admin_pass = 'admin'
+def loginMain(request):
     if request.method == 'POST':
         login_id = request.POST.get('id')
         login_pass = request.POST.get('pass')
-
-        if login_id == admin_id and login_pass == admin_pass:
-            request.session['admin'] = True
-            return render(request, 'admin.html')
+        user = authenticate(request, email=login_id, password=login_pass)
+        if user is not None:
+            login(request, user)
+            if user.is_superuser:
+                request.session['admin'] = True
+                return home(request)
+            else:
+                request.session['user'] = True
+                request.session['userId'] = login_id
+                return userHome(request)
         else:
-            try:
-                userObject = User.objects.filter(user_id=login_id).get()
-                if userObject is None or userObject.password != login_pass:
-                    return start(request, 'logged')
-                else:
-                    request.session['user'] = True
-                    request.session['userId'] = login_id
-                    return userHome(request)
-            except Exception:
-                return start(request, 'nouser')
+            return start(request, 'nouser')
 
 
 # -------------------------------------Admin PART------------------------------- #
-
+@login_required(login_url='../')
+@staff_member_required
 def userPage(request, added='no'):
-    if request.session.get('admin', False):
-        userData = User.objects.all()
-        return render(request, 'admin_pages/usersData.html', {'userData': userData, 'added': added})
-    else:
-        return start(request)
+    userData = UserMovie.objects.all()
+    return render(request, 'admin_pages/usersData.html', {'userData': userData, 'added': added})
 
 
+@login_required(login_url='../')
+@staff_member_required
 def home(request):
-    if request.session.get('admin', False):
-        return render(request, 'admin.html')
-    else:
-        return start(request)
+    return render(request, 'admin.html')
 
 
+@login_required(login_url='../')
+@staff_member_required
 def moviePage(request, added='no'):
-    if request.session.get('admin', False):
-        moviesData = Movie.objects.all()
-        categories = Category.objects.all()
-        return render(request, 'admin_pages/moviesData.html', {'moviesData': moviesData,
-                                                               'added': added,
-                                                               'categories': categories})
-    else:
-        return start(request)
+    moviesData = Movie.objects.all()
+    categories = Category.objects.all()
+    return render(request, 'admin_pages/moviesData.html', {'moviesData': moviesData,
+                                                           'added': added,
+                                                           'categories': categories})
 
 
+@login_required(login_url='../')
+@staff_member_required
 def deleteUser(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            User.objects.filter(user_id=request.POST.get('user_id')).delete()
-            return userPage(request, 'deleted')
+    if request.method == 'POST':
+        UserMovie.objects.filter(id=request.POST.get('user_id')).delete()
+        return userPage(request, 'deleted')
     else:
         return start(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def addUser(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            new_user = User()
-            new_user.user_id = request.POST.get('user_id')
-            new_user.name = request.POST.get('user_name')
-            new_user.password = request.POST.get('pass')
-            new_user.email = request.POST.get('emaill')
-            new_user.gender = request.POST.get('radio1')
-            new_user.save()
-            return userPage(request, 'yes')
+    if request.method == 'POST':
+        if len(UserMovie.objects.filter(email=request.POST.get('user_id'))) != 0:
+            return userPage(request, 'taken')
+        name = request.POST.get('user_name')
+        password = request.POST.get('pass')
+        email = request.POST.get('user_id')
+        gender = request.POST.get('radio1')
+        UserMovie.objects.createUser(email, name, gender, password)
+        return userPage(request, 'yes')
     else:
-        return start(request)
+        return userPage(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def editUser(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            new_user = User.objects.filter(user_id=request.POST.get('user_id1')).get()
-            new_user.name = request.POST.get('user_name1')
-            new_user.password = request.POST.get('pass1')
-            new_user.email = request.POST.get('emaill1')
-            new_user.gender = request.POST.get('rad')
+    if request.method == 'POST':
+        new_user = UserMovie.objects.filter(id=request.POST.get('user_id1')).get()
+        new_user.name = request.POST.get('user_name1')
+        new_user.gender = request.POST.get('rad')
 
-            new_user.save()
-            return userPage(request, 'updated')
+        new_user.save()
+        return userPage(request, 'updated')
     else:
         return start(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def addMovie(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            new_movie = Movie()
-            new_movie.movie_id = request.POST.get('movie_id')
-            new_movie.name = request.POST.get('movie_name')
-            new_movie.link = request.POST.get('link')
-            new_movie.year = request.POST.get('year1')
-            new_movie.description = request.POST.get('des')
-            new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
-            new_movie.save()
-            return moviePage(request, 'yes')
+    if request.method == 'POST':
+        new_movie = Movie()
+        new_movie.movie_id = request.POST.get('movie_id')
+        new_movie.name = request.POST.get('movie_name')
+        new_movie.link = request.POST.get('link')
+        new_movie.year = request.POST.get('year1')
+        new_movie.description = request.POST.get('des')
+        new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
+        new_movie.save()
+        return moviePage(request, 'yes')
     else:
         return start(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def delMovie(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            Movie.objects.filter(movie_id=request.POST.get('movie_id')).delete()
-            return moviePage(request, 'deleted')
+    if request.method == 'POST':
+        Movie.objects.filter(movie_id=request.POST.get('movie_id')).delete()
+        return moviePage(request, 'deleted')
     else:
         return start(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def editMovie(request):
-    if request.session.get('admin', False):
-        movie_object = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
-        categories = Category.objects.all()
-        return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object,
-                                                              'categories': categories})
-    else:
-        return start(request)
+    movie_object = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
+    categories = Category.objects.all()
+    return render(request, "admin_pages/editMovie.html", {'movie_obj': movie_object,
+                                                          'categories': categories})
 
 
+@login_required(login_url='../')
+@staff_member_required
 def saveeditMovie(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            new_movie = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
-            new_movie.name = request.POST.get('movie_name')
-            new_movie.link = request.POST.get('link')
-            new_movie.year = request.POST.get('year1')
-            new_movie.description = request.POST.get('des')
-            new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
-            new_movie.save()
-            return moviePage(request, 'updated')
+    if request.method == 'POST':
+        new_movie = Movie.objects.filter(movie_id=request.POST.get('movie_id')).get()
+        new_movie.name = request.POST.get('movie_name')
+        new_movie.link = request.POST.get('link')
+        new_movie.year = request.POST.get('year1')
+        new_movie.description = request.POST.get('des')
+        new_movie.category = Category.objects.filter(category_id=request.POST.get('select1')).get()
+        new_movie.save()
+        return moviePage(request, 'updated')
     else:
         return start(request)
 
 
+@login_required(login_url='../')
+@staff_member_required
 def addCat(request):
-    if request.session.get('admin', False):
-        if request.method == 'POST':
-            catname = request.POST.get('category')
-            category = Category()
-            category.cat_name = catname
+    if request.method == 'POST':
+        catname = request.POST.get('category')
+        category = Category()
+        category.cat_name = catname
 
-            category.save()
+        category.save()
 
-            return moviePage(request)
+        return moviePage(request)
 
 
-def logoutadmin(request):
-    try:
-        del request.session['admin']
-    except KeyError:
-        pass
+def logoutAll(request):
+    logout(request)
     return start(request)
 
 
@@ -196,17 +191,9 @@ def userHome(request, found='True'):
         return start(request)
 
 
-def userLogout(request):
-    try:
-        del request.session['user']
-    except KeyError:
-        pass
-    return start(request)
-
-
 def userProfile(request):
-    if request.session.get('admin', False) or request.session.get('user', False):
-        user_data = User.objects.filter(user_id=request.session['userId']).get()
+    if request.session.get('user', False):
+        user_data = UserMovie.objects.filter(email=request.session['userId']).get()
         return render(request, 'user_pages/editUser.html', {'user_data': user_data})
     else:
         return start(request)
@@ -215,10 +202,8 @@ def userProfile(request):
 def saveUserEdit(request):
     if request.session.get('admin', False) or request.session.get('user', False):
         if request.method == 'POST':
-            new_user = User.objects.filter(user_id=request.POST.get('user_id')).get()
+            new_user = UserMovie.objects.filter(id=request.POST.get('user_id')).get()
             new_user.name = request.POST.get('user_name')
-            new_user.password = request.POST.get('pass1')
-            new_user.email = request.POST.get('email1')
             new_user.gender = request.POST.get('rad')
 
             new_user.save()

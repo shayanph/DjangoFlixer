@@ -8,6 +8,9 @@
                 if ("{{ added }}" === "yes"){
                     $("#alertgood").fadeIn();
                 }
+                else if ("{{ added }}" === "taken"){
+                    $("#alertgood1").fadeIn();
+                }
                 else if("{{ added }}" === "deleted"){
                     $("#alertbad").fadeIn();
                 }
@@ -63,6 +66,13 @@
                            <span aria-hidden="true">&times;</span>
                        </button>
                    </div>
+                    <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertgood1" role="alert">
+                       <i class = "fa fa-warning"></i>
+                       <strong>Email Already Taken</strong>
+                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                   </div>
                     <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertbad" role="alert">
                        <i class = "fa fa-warning"></i>
                        <strong>User Deleted Successfully</strong>
@@ -81,10 +91,10 @@
                         <table class = "table table-hover table-bordered">
                             <thead class = "thead-dark">
                                 <tr>
-                                    <th>User Id</th>
-                                    <th>User Name</th>
                                     <th>User Email</th>
+                                    <th>User Name</th>
                                     <th>Gender</th>
+                                    <th>Is Admin?</th>
                                     <th>
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
@@ -97,10 +107,11 @@
                             <tbody>
                                 {% for lines in userData %}
                                 <tr>
-                                        <td id = 'userId{{forloop.counter0}}'>{{ lines.user_id}}</td>
-                                        <td>{{ lines.name}}</td>
                                         <td>{{ lines.email}}</td>
+                                        <td style = "display:none;" id = 'userId{{forloop.counter0}}'>{{ lines.id}}</td>
+                                        <td>{{ lines.name}}</td>
                                         <td>{{ lines.gender }}</td>
+                                        <td>{{ lines.is_admin }}</td>
                                         <td id = "buttonGroup" style = "display: flex; justify-content: space-evenly;">
                                         <div class = "buttonGroupForm">
                                             <button type="button" onclick = "getId('userId{{forloop.counter0}}')" class="btn btn-outline-success" data-toggle="modal" data-target="#modalUserEdit">
@@ -109,7 +120,7 @@
                                         </div>
                                         <form class = "buttonGroupForm" method="post" id = "deleteform" onsubmit = "return checkDelete()" action = "{% url 'Flixer:user-delete' %}">
                                             {% csrf_token %}
-                                            <input hidden name = "user_id" value = {{ lines.user_id }}>
+                                            <input hidden name = "user_id" value = {{ lines.id }}>
                                             <button class = "btn btn-outline-danger" type="submit" ><i class = "fa fa-remove"></i></button>
                                         </form>
                                         </td>
@@ -135,13 +146,13 @@
                      <div class="modal-body">
                          <div class = "form-group">
                             <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alert1" role="alert">
-                              <strong>Id Already Exists</strong>
+                              <strong>Email Already Exists</strong>
                               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
-                             <label for = "userid">User Id</label>
-                             <input required class = "form-control" type="text" name = "user_id" id="userid" placeholder="Enter a user Id">
+                             <label for = "userid">Email Address</label>
+                             <input required class = "form-control" type="text" name = "user_id" id="userid" placeholder="Enter an Email">
                          </div>
                          <div class = "form-group">
                             <label for = "username">User Name</label>
@@ -160,10 +171,6 @@
                          <div class = "form-group">
                              <label for = "repassword">Re-enter Password</label>
                              <input required class = "form-control" type="password" name = "repass" id="repassword" placeholder="Re Enter the password">
-                         </div>
-                         <div class = "form-group">
-                             <label for = "email">Email</label>
-                             <input required class = "form-control" type="email" onchange="" name = "emaill" id="email" placeholder="Enter an email">
                          </div>
                          <div class = "form-group">
                              <label>Gender</label>
@@ -189,7 +196,7 @@
             <div class="modal fade" id="modalUserEdit" tabindex="-1" role="dialog" aria-labelledby="modalUserEditTitle" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <form action="{% url 'Flixer:edit-user' %}" onsubmit = "event.preventDefault();  checkFields1()" id = "formUser1" method="post">
+                    <form action="{% url 'Flixer:edit-user' %}"  id = "formUser1" method="post">
                       {% csrf_token %}
                     <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">Edit user</h5>
@@ -199,31 +206,16 @@
                   </div>
                      <div class="modal-body">
                          <div class = "form-group">
+                             <label for = "email1">Email</label>
+                             <input readonly required class = "form-control" type="email" name = "emaill1" id="email1" placeholder="Enter an email">
+                         </div>
+                         <div class = "form-group" style = "display:none;">
                              <label for = "userid1">User Id</label>
-                             <input readonly class = "form-control" type="text" name = "user_id1" id="userid1" placeholder="Enter a user Id">
+                             <input  class = "form-control" type="text" name = "user_id1" id="userid1" placeholder="Enter a user Id">
                          </div>
                          <div class = "form-group">
                             <label for = "username1">User Name</label>
                              <input required class = "form-control" type="text" name = "user_name1" id="username1" placeholder="Enter a username">
-                         </div>
-                         <div class = "form-group">
-                            <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "passwordmatch1" role="alert">
-                              <strong>Passwords do not match</strong>
-                              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                             <label for = "password1">Password</label>
-                             <input required class = "form-control" type="password" name = "pass1" id="password1" placeholder="Enter a password">
-                            <input type="checkbox" onclick="showpass()"> Show Password
-                         </div>
-                         <div class = "form-group">
-                             <label for = "repassword1">Re-enter Password</label>
-                             <input required class = "form-control" type="password" name = "repass" id="repassword1" placeholder="Re Enter the password">
-                         </div>
-                         <div class = "form-group">
-                             <label for = "email1">Email</label>
-                             <input required class = "form-control" type="email" onchange="" name = "emaill1" id="email1" placeholder="Enter an email">
                          </div>
                          <div class = "form-group">
                              <label>Gender</label>
@@ -268,9 +260,9 @@
             {% for lines in userData %}
             if('{{ forloop.counter0 }}' === idnumber)
             {
-                document.getElementById('userid1').value = "{{ lines.user_id }}";
+
+                document.getElementById('userid1').value = "{{ lines.id }}";
                 document.getElementById('username1').value = "{{ lines.name }}";
-                document.getElementById('password1').value = "{{ lines.password }}";
                 document.getElementById('email1').value = "{{ lines.email }}";
                 if ('{{ lines.gender }}' === 'M'){
                     document.getElementById('radio1').checked = true;
@@ -292,38 +284,11 @@
     function checkDelete(){
         return confirm("Are you sure you want to delete the user?");
     }
-    function checkFields1(){
-
-        let id = document.getElementById('userid1').value;
-        let pass = document.getElementById('password1').value;
-        let rep = document.getElementById('repassword1').value;
-        let found = false;
-        if(pass !== rep)
-        {
-            $("#passwordmatch1").show();
-            found = true;
-        }
-
-        if(found === true){
-            return false;
-        }
-        else
-            document.getElementById('formUser1').submit();
-    }
 
     function checkFields(){
-
-        let id = document.getElementById('userid').value;
         let pass = document.getElementById('password').value;
         let rep = document.getElementById('repassword').value;
         let found = false;
-        {% for lines in userData %}
-            if({{ lines.user_id }} == id.toString())
-            {
-            $("#alert1").fadeIn();
-            found = true;
-            }
-        {% endfor %}
 
         if(pass !== rep)
         {

@@ -5,11 +5,11 @@ app_name = "Flixer"
 
 urlpatterns = [
     path('', views.start),
-    path('login/', views.login, name="login"),
+    path('login/', views.loginMain, name="login"),
 
     # ADMIN MODULE URLS
     path('home/', views.home, name="home"),
-    path('home/logout/', views.logoutadmin, name="logout-admin"),
+    path('home/logout/', views.logoutAll, name="logout-admin"),
     path('home/users/', views.userPage, name="user-page"),
     path('home/movies/', views.moviePage, name="movie-page"),
     path('home/delUser', views.deleteUser, name="user-delete"),
@@ -23,7 +23,7 @@ urlpatterns = [
 
     # USER MODULE URLS
     path('user/', views.userHome, name="user-home"),
-    path('user/logout', views.userLogout, name="user-logout"),
+    path('user/logout', views.logoutAll, name="user-logout"),
     path('user/profile', views.userProfile, name="user-profile"),
     path('home/saveeditUser', views.saveUserEdit, name="save-edit-user"),
     path('home/movieSearch', views.movieSearch, name="search-movie"),

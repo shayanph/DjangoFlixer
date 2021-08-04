@@ -26,8 +26,9 @@
                 justify-content: center;
                 height: 100vh;
                 align-items: center;
-
-                background: linear-gradient(to bottom right, #6600cc 0%, #66ffcc 100%);
+                background-image: url("https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2851&q=80");
+                background-repeat: no-repeat;
+                background-size: cover;
             }
             .loginDiv{
                 display: flex;
@@ -36,8 +37,7 @@
                 align-items: center;
                 justify-content: center;
                 border-radius: 10px;
-                box-shadow: 10px 10px 20px lightskyblue;
-                background: linear-gradient(to bottom right, #ccffff 0%, #ffccff 100%);
+                background: linear-gradient(to bottom right, #beb5b5 0%, #000000 100%);
             }
             .loginDiv input{
                 width: 15rem;
@@ -63,14 +63,14 @@
                         </div>
                         <div class="alert alert-danger alert-dismissible fade show" style = "display:none;" id = "alertbad" role="alert">
                            <i class = "fa fa-warning"></i>
-                           <strong>Id not found</strong>
+                           <strong>Email not found</strong>
                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                <span aria-hidden="true">&times;</span>
                            </button>
                         </div>
                         {% csrf_token %}
                         <div class = "form-group">
-                            <label>Enter id</label>
+                            <label>Enter email</label>
                             <input class = "form-control" type="text" name="id">
                         </div>
                         <div class = "form-group">

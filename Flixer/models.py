@@ -1,4 +1,6 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here
@@ -32,14 +34,36 @@ class Rating(models.Model):
     rating_value = models.CharField(max_length=1)
 
 
-class User(models.Model):
-    user_id = models.CharField(max_length=30, primary_key=True)
+class CustomUserManager(BaseUserManager):
+
+    def create_superuser(self, email, name, gender, password, **other_fields):
+        other_fields.setdefault('is_admin', True)
+        other_fields.setdefault('is_superuser', True)
+        other_fields.setdefault('is_staff', True)
+
+        return self.createUser(email, name, gender, password, **other_fields)
+
+    def createUser(self, email, name, gender, password, **other_fields):
+        email = self.normalize_email(email)
+        user = UserMovie(email=email, name=name, gender=gender, **other_fields)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class UserMovie(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(_('email address'), unique=True)
     name = models.CharField(max_length=200)
-    password = models.CharField(max_length=20)
     gender = models.CharField(max_length=2,
                               choices=[('M', 'Male'),
                                        ('F', 'Female')])
-    email = models.EmailField()
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name', 'gender']
 
     def __str__(self):
-        return '{0} : {1} : {2} : {3}'.format(self.user_id, self.name, self.password, self.email)
+        return '{0} : {1} : {2} : {3}'.format(self.id, self.name, self.is_staff, self.email)
