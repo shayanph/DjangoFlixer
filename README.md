@@ -15,8 +15,9 @@ or Clone the project using IDE's built in clone function.
 ```
 python3 manage.py runserver
 ```
-6. Credentials for admin
+6. To create a super user write
 ```
-Id: admin
-password : admin
+python3 manage.py createsuperuser
 ```
+7. Fill in the required fields
+8. Login using the created super user
