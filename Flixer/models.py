@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     cat_name = models.CharField(max_length=30)
-
+    #META CLAS
     def __str__(self):
         return '{0} : {1}'.format(self.category_id, self.cat_name)
 
@@ -31,7 +31,7 @@ class Rating(models.Model):
     rating_id = models.CharField(max_length=30, primary_key=True)
     user_id = models.CharField(max_length=30)
     movie_id = models.CharField(max_length=30)
-    rating_value = models.CharField(max_length=1)
+    rating_value = models.IntegerField()
 
 
 class CustomUserManager(BaseUserManager):

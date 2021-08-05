@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.shortcuts import render
 from Flixer.models import *
+from django.db import connection
+with connection.cursor() as cursor:
+    cursor.execute('CREATE EXTENSION IF NOT EXISTS pg_trgm')
 
 
 def start(request, defaurg='ok'):
